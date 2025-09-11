@@ -1,14 +1,40 @@
 {
-  "github": {
-    "silent": true
-  },
-  "buildCommand": "bun install --ignore-scripts && cd apps/nextjs && SKIP_ENV_VALIDATION=true bun run build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && bun install && bun run build",
   "outputDirectory": "apps/nextjs/.next",
-  "installCommand": "echo 'Skipping default install'",
-  "framework": null,
+  "installCommand": "bun install",
+  "framework": "nextjs",
   "functions": {
     "apps/nextjs/src/app/api/**": {
-      "runtime": "nodejs20.x"
+      "runtime": "nodejs18.x"
     }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "github": {
+    "silent": true
   }
 }
