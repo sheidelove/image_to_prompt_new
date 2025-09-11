@@ -2,11 +2,11 @@
   "github": {
     "silent": true
   },
-  "buildCommand": "bun install && cd apps/nextjs && contentlayer2 build && SKIP_ENV_VALIDATION=true next build",
+  "buildCommand": "bun install --ignore-scripts && cd apps/nextjs && npm install contentlayer2 && npx contentlayer2 build && SKIP_ENV_VALIDATION=true npx next build",
   "outputDirectory": "apps/nextjs/.next",
-  "installCommand": "echo 'Using buildCommand for install'",
+  "installCommand": "echo 'Skipping default install'",
   "framework": null,
-  "public": false,
+  "ignoreCommand": "echo 'Force build'",
   "functions": {
     "apps/nextjs/src/app/api/**": {
       "runtime": "nodejs18.x"
