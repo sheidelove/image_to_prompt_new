@@ -1,11 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && bun install && bun run build",
-  "outputDirectory": "apps/nextjs/.next",
+  "buildCommand": "turbo build --filter=@saasfly/nextjs",
   "installCommand": "bun install",
-  "framework": "nextjs",
+  "framework": null,
   "functions": {
-    "apps/nextjs/src/app/api/**": {
+    "apps/nextjs/src/app/api/**/*.ts": {
       "runtime": "nodejs18.x"
     }
   },
@@ -34,6 +33,9 @@
       ]
     }
   ],
+  "env": {
+    "SKIP_ENV_VALIDATION": "true"
+  },
   "github": {
     "silent": true
   }
