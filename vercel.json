@@ -2,7 +2,7 @@
   "github": {
     "silent": true
   },
-  "buildCommand": "cd ../.. && bun install --ignore-scripts && cd apps/nextjs && npm install contentlayer2 && npx contentlayer2 build && SKIP_ENV_VALIDATION=true npx next build",
+  "buildCommand": "cd ../.. && bun install --ignore-scripts && cd apps/nextjs && SKIP_ENV_VALIDATION=true bun run build",
   "outputDirectory": "apps/nextjs/.next",
   "installCommand": "echo 'Skipping default install'",
   "framework": null,
