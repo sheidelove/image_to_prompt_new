@@ -8,7 +8,7 @@
   "framework": null,
   "functions": {
     "apps/nextjs/src/app/api/**": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     }
   }
 }
