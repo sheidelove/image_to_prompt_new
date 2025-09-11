@@ -2,12 +2,12 @@
   "github": {
     "silent": true
   },
-  "buildCommand": "pwd && ls -la && bun install --ignore-scripts && cd apps/nextjs && pwd && SKIP_ENV_VALIDATION=true bun run build",
-  "outputDirectory": "apps/nextjs/.next",
+  "buildCommand": "pwd && ls -la && cd ../.. && pwd && ls -la && bun install --ignore-scripts && cd apps/nextjs && pwd && SKIP_ENV_VALIDATION=true bun run build",
+  "outputDirectory": "../nextjs/.next",
   "installCommand": "echo 'Skipping default install'",
   "framework": null,
   "functions": {
-    "apps/nextjs/src/app/api/**": {
+    "../nextjs/src/app/api/**": {
       "runtime": "nodejs18.x"
     }
   }
