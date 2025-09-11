@@ -1,7 +1,10 @@
 {
   "env": {
     "SKIP_ENV_VALIDATION": "true",
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_APP_URL": "https://image-to-prompt-seven.vercel.app",
+    "NEXTAUTH_URL": "https://image-to-prompt-seven.vercel.app",
+    "NEXTAUTH_SECRET": "temp-secret-key-for-deployment"
   },
   "github": {
     "silent": true
