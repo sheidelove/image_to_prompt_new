@@ -31,7 +31,7 @@ const config = {
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  output: "standalone",
+  // Remove standalone output for Vercel deployment
 };
 
 export default withNextDevtools(withMDX()(config));

@@ -1,4 +1,12 @@
 {
+  "buildCommand": "cd apps/nextjs && npm run build",
+  "outputDirectory": "apps/nextjs/.next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "SKIP_ENV_VALIDATION": "true",
+    "NODE_ENV": "production"
+  },
   "github": {
     "silent": true
   }
