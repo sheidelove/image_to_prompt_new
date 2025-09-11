@@ -122,7 +122,7 @@ export const authOptions: NextAuthOptions = {
       };
     },
   },
-  debug: env.IS_DEBUG === "true",
+  debug: env.IS_DEBUG === "true"
 };
 
 // Use it in server contexts

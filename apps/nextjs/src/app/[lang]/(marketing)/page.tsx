@@ -2,58 +2,41 @@ import Link from "next/link";
 import Image from "next/image";
 import { getDictionary } from "~/lib/get-dictionary";
 
-import { CodeCopy } from "~/components/code-copy";
-import { Comments } from "~/components/comments";
-import { FeaturesGrid } from "~/components/features-grid";
-import { RightsideMarketing } from "~/components/rightside-marketing";
-
-import { AnimatedTooltip } from "@saasfly/ui/animated-tooltip";
-import { BackgroundLines } from "@saasfly/ui/background-lines";
 import { Button } from "@saasfly/ui/button";
-import { ColourfulText } from "@saasfly/ui/colorful-text";
 import * as Icons from "@saasfly/ui/icons";
+import { Card, CardContent } from "@saasfly/ui/card";
 
 import type { Locale } from "~/config/i18n-config";
-import {VideoScroll} from "~/components/video-scroll";
 
-const people = [
+// Feature data matching ImagePrompt.org structure
+const getFeatures = (lang: string) => [
   {
     id: 1,
-    name: "tianzx",
-    designation: "CEO at Nextify",
-    image: "https://avatars.githubusercontent.com/u/10096899",
-    link: "https://x.com/nextify2024",
+    icon: Icons.Page,
+    title: lang === 'zh' ? "图像转提示词" : "Image to Prompt",
+    description: lang === 'zh' ? "将图像转换为提示词来生成你自己的图像" : "Convert Image to Prompt to generate your own image",
+    gradient: "from-purple-500 to-pink-500"
   },
   {
     id: 2,
-    name: "jackc3",
-    designation: "Co-founder at Nextify",
-    image: "https://avatars.githubusercontent.com/u/10334353",
-    link: "https://x.com/BingxunYao",
+    icon: Icons.Settings,
+    title: lang === 'zh' ? "魔法增强" : "Magic Enhance", 
+    description: lang === 'zh' ? "将简单文本转换为详细的、描述性的图像提示词" : "Transform simple text into detailed, descriptive image prompt",
+    gradient: "from-blue-500 to-purple-500"
   },
   {
     id: 3,
-    name: "imesong",
-    designation: "Contributor",
-    image: "https://avatars.githubusercontent.com/u/3849293",
+    icon: Icons.Search,
+    title: lang === 'zh' ? "AI 图像描述" : "AI Describe Image",
+    description: lang === 'zh' ? "让 AI 帮助你理解和详细分析任何图像" : "Let AI help you understand and analyze any image in detail",
+    gradient: "from-green-500 to-blue-500"
   },
   {
     id: 4,
-    name: "ziveen",
-    designation: "Contributor",
-    image: "https://avatars.githubusercontent.com/u/22560152",
-  },
-  {
-    id: 5,
-    name: "Zenuncl",
-    designation: "Independent Software Developer",
-    image: "https://avatars.githubusercontent.com/u/3316062",
-  },
-  {
-    id: 6,
-    name: "Innei",
-    designation: "Indie Developer",
-    image: "https://avatars.githubusercontent.com/u/41265413",
+    icon: Icons.Blocks,
+    title: lang === 'zh' ? "AI 图像生成器" : "AI Image Generator",
+    description: lang === 'zh' ? "使用 AI 驱动的生成将你的图像提示词转换为令人惊叹的视觉效果" : "Transform your image prompt into stunning visuals with AI-powered generation",
+    gradient: "from-orange-500 to-red-500"
   },
 ];
 
@@ -65,118 +48,124 @@ export default async function IndexPage({
   };
 }) {
   const dict = await getDictionary(lang);
+  const features = getFeatures(lang);
+
+  // 动态生成多语言标题和描述，匹配 ImagePrompt.org 风格
+  const heroTitle = lang === 'zh' 
+    ? "创建更好的 AI 艺术"
+    : "Create Better AI Art";
+  
+  const heroSubtitle = lang === 'zh'
+    ? "使用 Image Prompt"
+    : "with Image Prompt";
+  
+  const heroDescription = lang === 'zh'
+    ? "激发创意，增强图像提示词，创造杰作"
+    : "Inspire ideas, Enhance image prompt, Create masterpieces";
 
   return (
-    <>
-      <section className="container">
-        <div className="grid grid-cols-1 gap-10 xl:grid-cols-2">
-          <div className="flex flex-col items-start h-full">
-            <BackgroundLines className="h-full">
-              <div className="flex flex-col pt-4 md:pt-36 lg:pt-36 xl:pt-36">
-                <div className="mt-20">
-                  <div
-                    className="mb-6 max-w-4xl text-left text-4xl font-semibold dark:text-zinc-100 md:text-5xl xl:text-5xl md:leading-[4rem] xl:leading-[4rem]">
-                    {dict.marketing.title || "Ship your apps to the world easier with "}
-                    <ColourfulText text="Saasfly"/>
-                  </div>
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-purple-50 to-blue-50 dark:from-purple-950 dark:via-purple-900 dark:to-gray-900 relative overflow-hidden">
+      {/* 简化的背景装饰元素，更接近 ImagePrompt.org 风格 */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-2xl opacity-30"></div>
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-2xl opacity-30"></div>
+      </div>
 
-                <div className="mt-4">
-                  <span className="text-neutral-500 dark:text-neutral-400 sm:text-lg">
-                    {dict.marketing.sub_title || "Your complete All-in-One solution for building SaaS services."}
-                  </span>
-                </div>
+      {/* 主要内容区域 */}
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 pt-20 pb-16 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6">
+              {heroTitle}{" "}
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {heroSubtitle}
+              </span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+              {heroDescription}
+            </p>
 
-                <div
-                  className="mb-4 mt-6 flex w-full flex-col justify-center space-y-4 sm:flex-row sm:justify-start sm:space-x-8 sm:space-y-0 z-10">
-                  <Link href="https://github.com/saasfly/saasfly" target="_blank">
-                    <Button
-                      className="bg-blue-600 hover:bg-blue-500 text-white rounded-full text-lg px-6 h-12 font-medium">
-                      {dict.marketing.get_started}
-                      <Icons.ArrowRight className="h-5 w-5"/>
-                    </Button>
-                  </Link>
-
-                  <CodeCopy/>
-                </div>
-
-                <div className="flex xl:flex-row flex-col items-center justify-start mt-4 w-full">
-                  <div className="flex">
-                    <AnimatedTooltip items={people}/>
-                  </div>
-                  <div className="flex flex-col items-center justify-start ml-8">
-                    <div className="w-[340px]">
-                      <span className="font-semibold">9 </span>
-                      <span className="text-neutral-500 dark:text-neutral-400">{dict.marketing.contributors.contributors_desc}</span>
-                    </div>
-                    <div className="w-[340px]">
-                      <span
-                        className="text-neutral-500 dark:text-neutral-400">{dict.marketing.contributors.developers_first}</span>
-                      <ColourfulText text="2000"/>
-                      <span
-                        className="text-neutral-500 dark:text-neutral-400">{dict.marketing.contributors.developers_second}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </BackgroundLines>
-          </div>
-
-          <div className="hidden h-full w-full xl:block bg-background">
-            <div className="flex flex-col pt-44">
-              <RightsideMarketing dict={dict.marketing.right_side}/>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <Link href={`/${lang}/image-to-prompt`}>
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                  {lang === 'zh' ? "立即试用 !" : "Try it now !"}
+                </Button>
+              </Link>
+              
+              <Button 
+                variant="outline" 
+                className="px-8 py-4 text-lg font-semibold rounded-full border-2 border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-950 transition-all duration-200"
+              >
+                {lang === 'zh' ? "教程" : "Tutorials"}
+              </Button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="container mt-8 md:mt-[-180px] xl:mt-[-180px]">
-        <FeaturesGrid dict={dict.marketing.features_grid}/>
-      </section>
+        {/* Features Grid */}
+        <section className="container mx-auto px-4 pb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {features.map((feature) => {
+              const IconComponent = feature.icon;
+              const isImageToPrompt = feature.id === 1;
+              
+              const cardContent = (
+                <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
 
-      <section className="container pt-24">
-        <div className="flex flex-col justify-center items-center pt-10">
-          <div className="text-lg text-neutral-500 dark:text-neutral-400">{dict.marketing.sponsor.title}</div>
-          <div className="mt-4 flex items-center gap-4">
-            <Link href="https://go.clerk.com/uKDp7Au" target="_blank">
-              <Image src="/images/clerk.png" width="48" height="48" alt="twillot"/>
-            </Link>
-            <Link href="https://www.twillot.com/" target="_blank">
-              <Image src="https://www.twillot.com/logo-128.png" width="48" height="48" alt="twillot"/>
-            </Link>
-            <Link href="https://www.setupyourpay.com/" target="_blank">
-              <Image src="https://www.setupyourpay.com/logo.png" width="48" height="48" alt="setupyourpay" />
-            </Link>
-            <Link href="https://opencollective.com/saasfly" target="_blank">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:bg-accent dark:hover:bg-neutral-800/30">
-                <Icons.Heart className="w-5 h-5 fill-pink-600 text-pink-600 dark:fill-pink-700 dark:text-pink-700" />
-                <span className="text-sm font-medium text-neutral-500 dark:text-neutral-200">{dict.marketing.sponsor.donate || ''}</span>
-              </div>
-            </Link>
+              return (
+                <div key={feature.id}>
+                  {isImageToPrompt ? (
+                    <Link href={`/${lang}/image-to-prompt`} className="block">
+                      {cardContent}
+                    </Link>
+                  ) : (
+                    cardContent
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="container pt-8">
-        <VideoScroll dict={dict.marketing.video}/>
-      </section>
-
-      <section className="w-full px-8 pt-10 sm:px-0 sm:pt-24 md:px-0 md:pt-24 xl:px-0 xl:pt-24">
-        <div className="flex h-full w-full flex-col items-center pb-[100px] pt-10">
-          <div>
-            <h1 className="mb-6 text-center text-3xl font-bold dark:text-zinc-100 md:text-5xl">
-              {dict.marketing.people_comment.title}
-            </h1>
+        {/* Bottom Call to Action */}
+        <section className="container mx-auto px-4 pb-20 text-center">
+          <div className="max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              <span className="text-gray-500">
+                {lang === 'zh' ? "您可能感兴趣：" : "You may be interested in: "}
+              </span>
+              <Link 
+                href="#" 
+                className="text-purple-600 hover:text-purple-700 underline decoration-2 underline-offset-4 hover:decoration-purple-700 transition-colors"
+              >
+                {lang === 'zh' ? "什么是图像提示词？" : "What is an Image Prompt?"}
+              </Link>
+              <span className="mx-4 text-gray-400">|</span>
+              <Link 
+                href="#" 
+                className="text-purple-600 hover:text-purple-700 underline decoration-2 underline-offset-4 hover:decoration-purple-700 transition-colors"
+              >
+                {lang === 'zh' ? "如何编写有效的图像提示词？" : "How to Write Effective Image Prompt?"}
+              </Link>
+            </p>
           </div>
-          <div className="mb-6 text-lg text-neutral-500 dark:text-neutral-400">
-            {dict.marketing.people_comment.desc}
-          </div>
-
-          <div className="w-full overflow-x-hidden">
-            <Comments/>
-          </div>
-        </div>
-      </section>
-    </>
+        </section>
+      </div>
+    </div>
   );
 }

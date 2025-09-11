@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter as FontSans } from "next/font/google";
 import localFont from "next/font/local";
 
@@ -51,10 +50,10 @@ export const metadata = {
   ],
   authors: [
     {
-      name: "saasfly",
+      name: "ImagePrompt.org",
     },
   ],
-  creator: "Saasfly",
+  creator: "ImagePrompt.org",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -68,7 +67,7 @@ export const metadata = {
     // shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL("https://show.saasfly.io/"),
+  metadataBase: new URL("https://imageprompt.org/"),
   // manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
@@ -78,32 +77,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        {/*<Suspense>*/}
-        {/*  <PostHogPageview />*/}
-        {/*</Suspense>*/}
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable,
-            fontHeading.variable,
-          )}
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      {/*<Suspense>*/}
+      {/*  <PostHogPageview />*/}
+      {/*</Suspense>*/}
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+          fontHeading.variable,
+        )}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-          >
-            <NextDevtoolsProvider>{children}</NextDevtoolsProvider>
-            <Analytics />
-            <SpeedInsights />
-            <Toaster />
-            <TailwindIndicator />
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+          <NextDevtoolsProvider>{children}</NextDevtoolsProvider>
+          <Analytics />
+          <SpeedInsights />
+          <Toaster />
+          <TailwindIndicator />
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

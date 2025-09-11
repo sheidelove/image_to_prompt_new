@@ -13,6 +13,7 @@ const publicRoute = [
   "/(\\w{2}/)?docs(.*)",
   "/(\\w{2}/)?blog(.*)",
   "/(\\w{2}/)?pricing(.*)",
+  "/(\\w{2}/)?image-to-prompt(.*)",
   "^/\\w{2}$", // root with locale
 ];
 
@@ -98,7 +99,7 @@ const authMiddleware = withAuth(
  * @param request
  * @returns
  */
-export default async function middleware(request: NextRequest) {
+export const middleware = async function middleware(request: NextRequest) {
   if (isNoNeedProcess(request)) {
     return null;
   }
@@ -129,4 +130,6 @@ export default async function middleware(request: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   return authMiddleware(request, null);
-}
+};
+
+export default middleware;

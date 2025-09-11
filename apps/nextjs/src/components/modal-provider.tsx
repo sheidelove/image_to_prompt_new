@@ -1,7 +1,6 @@
 "use client";
 
 import { SignInModal } from "~/components/sign-in-modal";
-import { SignInClerkModal } from "~/components/sign-in-modal-clerk";
 import { useMounted } from "~/hooks/use-mounted";
 
 export const ModalProvider = ({ dict }: { dict: Record<string, string> }) => {
@@ -13,8 +12,7 @@ export const ModalProvider = ({ dict }: { dict: Record<string, string> }) => {
 
   return (
     <>
-      {/* <SignInModal dict={dict} /> */}
-      <SignInClerkModal dict={dict} />
+      <SignInModal dict={dict} />
     </>
   );
 };

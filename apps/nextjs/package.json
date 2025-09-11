@@ -5,7 +5,7 @@
   "scripts": {
     "build": "contentlayer2 build && bun with-env next build",
     "clean": "git clean -xdf .next .turbo node_modules",
-    "dev": "bun with-env next dev",
+    "dev": "COZE_WORKFLOW_ID=\"7547581941349449764\" bun with-env next dev",
     "lint": " bun with-env next lint --quiet",
     "format": "prettier --write '**/*.{js,cjs,mjs,ts,tsx,md,json}'  --ignore-path .prettierignore",
     "start": "bun with-env next start",
