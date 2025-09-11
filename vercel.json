@@ -1,41 +1,4 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "turbo build --filter=@saasfly/nextjs",
-  "installCommand": "bun install",
-  "framework": null,
-  "functions": {
-    "apps/nextjs/src/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "origin-when-cross-origin"
-        }
-      ]
-    }
-  ],
-  "env": {
-    "SKIP_ENV_VALIDATION": "true"
-  },
   "github": {
     "silent": true
   }
