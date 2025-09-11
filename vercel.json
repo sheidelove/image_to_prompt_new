@@ -1,5 +1,14 @@
 {
   "github": {
     "silent": true
+  },
+  "buildCommand": "cd apps/nextjs && contentlayer2 build && SKIP_ENV_VALIDATION=true next build",
+  "outputDirectory": "apps/nextjs/.next",
+  "installCommand": "bun install",
+  "framework": null,
+  "functions": {
+    "apps/nextjs/**": {
+      "runtime": "nodejs18.x"
+    }
   }
 }
