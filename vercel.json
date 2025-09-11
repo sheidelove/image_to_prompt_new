@@ -2,7 +2,7 @@
   "github": {
     "silent": true
   },
-  "buildCommand": "bun install --ignore-scripts && cd apps/nextjs && SKIP_ENV_VALIDATION=true bun run build",
+  "buildCommand": "pwd && ls -la && bun install --ignore-scripts && cd apps/nextjs && pwd && SKIP_ENV_VALIDATION=true bun run build",
   "outputDirectory": "apps/nextjs/.next",
   "installCommand": "echo 'Skipping default install'",
   "framework": null,
