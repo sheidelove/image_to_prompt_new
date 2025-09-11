@@ -6,7 +6,6 @@
   "outputDirectory": "apps/nextjs/.next",
   "installCommand": "echo 'Skipping default install'",
   "framework": null,
-  "ignoreCommand": "echo 'Force build'",
   "functions": {
     "apps/nextjs/src/app/api/**": {
       "runtime": "nodejs18.x"
