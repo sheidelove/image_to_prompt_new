@@ -21,16 +21,21 @@ const noNeedProcessRoute = [".*\\.png", ".*\\.jpg", ".*\\.opengraph-image.png"];
 
 const noRedirectRoute = ["/api(.*)", "/trpc(.*)", "/admin"];
 
-function getLocale(request: NextRequest): string | undefined {
-  // Negotiator expects plain object so we need to transform headers
-  const negotiatorHeaders: Record<string, string> = {};
-  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
-  const locales = Array.from(i18n.locales);
-  // Use negotiator and intl-localematcher to get best locale
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
-    locales,
-  );
-  return matchLocale(languages, locales, i18n.defaultLocale);
+function getLocale(request: NextRequest): string {
+  try {
+    // Negotiator expects plain object so we need to transform headers
+    const negotiatorHeaders: Record<string, string> = {};
+    request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
+    const locales = Array.from(i18n.locales);
+    // Use negotiator and intl-localematcher to get best locale
+    const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
+      locales,
+    );
+    return matchLocale(languages, locales, i18n.defaultLocale);
+  } catch (error) {
+    console.error('Error getting locale:', error);
+    return i18n.defaultLocale;
+  }
 }
 
 function isNoRedirect(request: NextRequest): boolean {
@@ -100,36 +105,46 @@ const authMiddleware = withAuth(
  * @returns
  */
 export const middleware = async function middleware(request: NextRequest) {
-  if (isNoNeedProcess(request)) {
-    return null;
-  }
-  const isWebhooksRoute = request.nextUrl.pathname.startsWith("/api/webhooks/");
-  if (isWebhooksRoute) {
+  try {
+    if (isNoNeedProcess(request)) {
+      return NextResponse.next();
+    }
+    
+    const isWebhooksRoute = request.nextUrl.pathname.startsWith("/api/webhooks/");
+    if (isWebhooksRoute) {
+      return NextResponse.next();
+    }
+    
+    const pathname = request.nextUrl.pathname;
+    
+    // Check if there is any supported locale in the pathname
+    const pathnameIsMissingLocale = i18n.locales.every(
+      (locale) =>
+        !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
+    );
+    
+    // Redirect if there is no locale
+    if (!isNoRedirect(request) && pathnameIsMissingLocale) {
+      const locale = getLocale(request);
+      return NextResponse.redirect(
+        new URL(
+          `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
+          request.url,
+        ),
+      );
+    }
+
+    if (isPublicPage(request)) {
+      return NextResponse.next();
+    }
+    
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return authMiddleware(request, null);
+  } catch (error) {
+    console.error('Middleware error:', error);
     return NextResponse.next();
   }
-  const pathname = request.nextUrl.pathname;
-  // Check if there is any supported locale in the pathname
-  const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) =>
-      !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
-  );
-  // Redirect if there is no locale
-  if (!isNoRedirect(request) && pathnameIsMissingLocale) {
-    const locale = getLocale(request);
-    return NextResponse.redirect(
-      new URL(
-        `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
-        request.url,
-      ),
-    );
-  }
-
-  if (isPublicPage(request)) {
-    return null;
-  }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  return authMiddleware(request, null);
 };
 
 export default middleware;
