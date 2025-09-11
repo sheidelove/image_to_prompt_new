@@ -4,7 +4,9 @@
     "NODE_ENV": "production",
     "NEXT_PUBLIC_APP_URL": "https://image-to-prompt-seven.vercel.app",
     "NEXTAUTH_URL": "https://image-to-prompt-seven.vercel.app",
-    "NEXTAUTH_SECRET": "temp-secret-key-for-deployment"
+    "NEXTAUTH_SECRET": "temp-secret-key-for-deployment",
+    "COZE_API_TOKEN": "your-coze-api-token-here",
+    "COZE_WORKFLOW_ID": "7547581941349449764"
   },
   "github": {
     "silent": true

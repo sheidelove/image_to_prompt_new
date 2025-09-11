@@ -5,6 +5,23 @@ export async function POST(request: NextRequest) {
   try {
     console.log("Starting image to prompt generation...");
 
+    // Check required environment variables
+    if (!env.COZE_API_TOKEN || env.COZE_API_TOKEN === "your-coze-api-token-here") {
+      console.error("COZE_API_TOKEN not configured");
+      return NextResponse.json(
+        { error: "API configuration missing. Please configure COZE_API_TOKEN in Vercel environment variables." },
+        { status: 500 }
+      );
+    }
+
+    if (!env.COZE_WORKFLOW_ID) {
+      console.error("COZE_WORKFLOW_ID not configured");
+      return NextResponse.json(
+        { error: "API configuration missing. Please configure COZE_WORKFLOW_ID in Vercel environment variables." },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("image") as File;
     const stylePreference = formData.get("style_preference") as string || "detailed";
