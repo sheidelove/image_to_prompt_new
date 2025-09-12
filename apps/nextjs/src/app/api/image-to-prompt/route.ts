@@ -66,13 +66,23 @@ export async function POST(request: NextRequest) {
     });
 
     console.log("Upload response status:", uploadResponse.status);
+    console.log("Upload response headers:", Object.fromEntries(uploadResponse.headers.entries()));
     
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
-      console.error("Coze file upload failed:", errorText);
+      console.error("Coze file upload failed:", {
+        status: uploadResponse.status,
+        statusText: uploadResponse.statusText,
+        error: errorText,
+        headers: Object.fromEntries(uploadResponse.headers.entries())
+      });
       return NextResponse.json(
-        { error: `File upload failed: ${errorText}` },
-        { status: uploadResponse.status }
+        { 
+          error: `File upload failed: ${errorText}`,
+          status: uploadResponse.status,
+          details: "Check if COZE_API_TOKEN is valid and has file upload permissions"
+        },
+        { status: 400 }
       );
     }
 
@@ -118,13 +128,25 @@ export async function POST(request: NextRequest) {
     });
 
     console.log("Workflow response status:", workflowResponse.status);
+    console.log("Workflow response headers:", Object.fromEntries(workflowResponse.headers.entries()));
 
     if (!workflowResponse.ok) {
       const errorText = await workflowResponse.text();
-      console.error("Coze workflow failed:", errorText);
+      console.error("Coze workflow failed:", {
+        status: workflowResponse.status,
+        statusText: workflowResponse.statusText,
+        error: errorText,
+        headers: Object.fromEntries(workflowResponse.headers.entries()),
+        payload: workflowPayload
+      });
       return NextResponse.json(
-        { error: `Workflow execution failed: ${errorText}` },
-        { status: workflowResponse.status }
+        { 
+          error: `Workflow execution failed: ${errorText}`,
+          status: workflowResponse.status,
+          workflowId: env.COZE_WORKFLOW_ID,
+          details: "Check if COZE_WORKFLOW_ID is correct and workflow is published"
+        },
+        { status: 400 }
       );
     }
 
