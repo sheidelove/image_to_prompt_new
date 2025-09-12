@@ -5,7 +5,7 @@ import { getCurrentUser } from "@saasfly/auth";
 import { Customer, db } from "@saasfly/db";
 import { stripe } from "@saasfly/stripe";
 
-import { pricingData } from "../../../common/src/subscriptions";
+import { pricingData } from "@saasfly/common/subscriptions";
 import { env } from "../env.mjs";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
