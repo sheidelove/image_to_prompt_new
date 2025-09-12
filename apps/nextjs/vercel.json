@@ -12,6 +12,9 @@
     },
     "src/app/api/image-to-prompt/route.ts": {
       "maxDuration": 300
+    },
+    "src/app/api/image-to-prompt-async/route.ts": {
+      "maxDuration": 300
     }
   },
   "regions": ["iad1"],

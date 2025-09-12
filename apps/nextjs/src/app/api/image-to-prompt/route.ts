@@ -1,6 +1,10 @@
 import { env } from "~/env";
 import { NextRequest, NextResponse } from "next/server";
 
+// Configure runtime for extended execution time
+export const runtime = 'nodejs';
+export const maxDuration = 300; // 5 minutes
+
 export async function POST(request: NextRequest) {
   try {
     console.log("Starting image to prompt generation...");
