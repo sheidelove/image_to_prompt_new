@@ -8,7 +8,10 @@
   },
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
+    },
+    "src/app/api/image-to-prompt/route.ts": {
+      "maxDuration": 300
     }
   },
   "regions": ["iad1"],

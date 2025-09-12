@@ -116,6 +116,40 @@ export function ImageToPromptTool({ lang }: ImageToPromptToolProps) {
     }
   };
 
+  const pollTaskStatus = async (taskId: string) => {
+    const maxAttempts = 120; // 2 minutes max (2 seconds * 120)
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        const response = await fetch(`/api/image-to-prompt-status/${taskId}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to check task status");
+        }
+
+        const data = await response.json();
+        
+        if (data.status === 'completed') {
+          setGeneratedPrompt(data.result.prompt);
+          return;
+        } else if (data.status === 'failed') {
+          throw new Error(data.error || "Task failed");
+        }
+        
+        // Still processing, wait and try again
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        attempts++;
+        
+      } catch (error) {
+        console.error("Error polling task status:", error);
+        throw error;
+      }
+    }
+    
+    throw new Error("Task timed out");
+  };
+
   const handleGeneratePrompt = async () => {
     if (!imageFile) return;
     
@@ -127,22 +161,42 @@ export function ImageToPromptTool({ lang }: ImageToPromptToolProps) {
       formData.append("image", imageFile);
       formData.append("style_preference", selectedModel);
 
-      const response = await fetch("/api/image-to-prompt", {
+      // Try async version first
+      const response = await fetch("/api/image-to-prompt-async", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate prompt");
+        // If async fails, fall back to original API
+        console.log("Async API failed, falling back to sync...");
+        const syncResponse = await fetch("/api/image-to-prompt", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!syncResponse.ok) {
+          const errorData = await syncResponse.json();
+          throw new Error(errorData.error || "Failed to generate prompt");
+        }
+
+        const syncData = await syncResponse.json();
+        setGeneratedPrompt(syncData.prompt);
+        return;
       }
 
       const data = await response.json();
-      setGeneratedPrompt(data.prompt);
+      
+      if (data.taskId) {
+        // Async processing started, poll for results
+        setGeneratedPrompt(lang === 'zh' ? "正在生成提示词，请稍候..." : "Generating prompt, please wait...");
+        await pollTaskStatus(data.taskId);
+      } else {
+        throw new Error("No task ID returned");
+      }
 
     } catch (error) {
       console.error("Failed to generate prompt:", error);
-      // Display error to user, e.g., using a toast notification
       setGeneratedPrompt(lang === 'zh' ? "生成失败，请重试。" : "Failed to generate prompt. Please try again.");
     } finally {
       setIsGenerating(false);
