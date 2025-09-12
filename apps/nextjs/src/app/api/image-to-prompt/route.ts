@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       workflow_id: env.COZE_WORKFLOW_ID,
       parameters: {
         "image": imageParam,
-        "style_preference": stylePreference,
+        "style_preferenc": stylePreference, // Note: Coze workflow expects this exact parameter name (missing 'e')
         "user_query": ""
       }
     };
