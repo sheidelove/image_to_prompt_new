@@ -4,12 +4,20 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     console.log("Starting image to prompt generation...");
+    console.log("Environment check:", {
+      hasCozeToken: !!env.COZE_API_TOKEN,
+      hasWorkflowId: !!env.COZE_WORKFLOW_ID,
+      workflowId: env.COZE_WORKFLOW_ID?.substring(0, 10) + "..." // Log first 10 chars for debugging
+    });
 
     // Check required environment variables
     if (!env.COZE_API_TOKEN || env.COZE_API_TOKEN === "your-coze-api-token-here") {
-      console.error("COZE_API_TOKEN not configured");
+      console.error("COZE_API_TOKEN not configured properly");
       return NextResponse.json(
-        { error: "API configuration missing. Please configure COZE_API_TOKEN in Vercel environment variables." },
+        { 
+          error: "API configuration missing. Please configure COZE_API_TOKEN in Vercel environment variables.",
+          details: "COZE_API_TOKEN is required for image-to-prompt functionality"
+        },
         { status: 500 }
       );
     }
@@ -17,7 +25,10 @@ export async function POST(request: NextRequest) {
     if (!env.COZE_WORKFLOW_ID) {
       console.error("COZE_WORKFLOW_ID not configured");
       return NextResponse.json(
-        { error: "API configuration missing. Please configure COZE_WORKFLOW_ID in Vercel environment variables." },
+        { 
+          error: "API configuration missing. Please configure COZE_WORKFLOW_ID in Vercel environment variables.",
+          details: "COZE_WORKFLOW_ID is required for workflow execution"
+        },
         { status: 500 }
       );
     }
@@ -90,7 +101,7 @@ export async function POST(request: NextRequest) {
       workflow_id: env.COZE_WORKFLOW_ID,
       parameters: {
         "image": imageParam,
-        "style_preferenc": stylePreference,
+        "style_preference": stylePreference,
         "user_query": ""
       }
     };
@@ -249,8 +260,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("Error in image-to-prompt API:", error);
+    
+    // Provide more detailed error information
+    let errorMessage = "Internal server error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
+    
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: errorMessage,
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }
