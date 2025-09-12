@@ -1,6 +1,6 @@
 import { env } from "~/env";
 import { NextRequest, NextResponse } from "next/server";
-import { TaskStorage, type TaskData } from "~/lib/task-storage";
+import { StatelessTaskStorage, type TaskData } from "~/lib/stateless-task-storage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,34 +38,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a unique task ID
+    // Generate a unique task ID for logging
     const taskId = `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    console.log("Created task:", taskId);
+    console.log("Processing task:", taskId);
 
-    // Initialize task status
-    TaskStorage.set(taskId, {
-      status: 'pending',
-      startTime: Date.now()
-    });
-
-    // Start async processing (don't await)
-    processImageAsync(taskId, file, stylePreference).catch(error => {
-      console.error("Async processing failed:", error);
-      TaskStorage.set(taskId, {
-        status: 'failed',
-        error: error instanceof Error ? error.message : String(error),
-        startTime: Date.now()
+    try {
+      // Process directly and return result (with extended timeout)
+      const result = await processImageAsync(taskId, file, stylePreference);
+      
+      return NextResponse.json({
+        success: true,
+        prompt: result.prompt,
+        fileId: result.fileId,
+        taskId: taskId
       });
-    });
-
-    // Return task ID immediately
-    return NextResponse.json({
-      success: true,
-      taskId,
-      message: "Task started. Use the taskId to check status.",
-      statusUrl: `/api/image-to-prompt-status/${taskId}`
-    });
+      
+    } catch (error) {
+      console.error("Processing failed:", error);
+      return NextResponse.json(
+        { 
+          error: error instanceof Error ? error.message : String(error),
+          taskId: taskId
+        },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error("Error in async image-to-prompt API:", error);
@@ -82,12 +79,6 @@ export async function POST(request: NextRequest) {
 async function processImageAsync(taskId: string, file: File, stylePreference: string) {
   try {
     console.log(`Processing task ${taskId} - Starting file upload...`);
-    
-    // Update status to processing
-    TaskStorage.set(taskId, {
-      status: 'processing',
-      startTime: Date.now()
-    });
 
     // Step 1: Upload file to Coze
     const uploadFormData = new FormData();
@@ -193,24 +184,15 @@ async function processImageAsync(taskId: string, file: File, stylePreference: st
     }
 
     console.log(`Task ${taskId} - Completed successfully`);
-
-    // Update task with result
-    TaskStorage.set(taskId, {
-      status: 'completed',
-      result: {
-        prompt: generatedPrompt,
-        fileId: fileId
-      },
-      startTime: Date.now()
-    });
+    return {
+      success: true,
+      prompt: generatedPrompt,
+      fileId: fileId
+    };
 
   } catch (error) {
     console.error(`Task ${taskId} failed:`, error);
-    TaskStorage.set(taskId, {
-      status: 'failed',
-      error: error instanceof Error ? error.message : String(error),
-      startTime: Date.now()
-    });
+    throw error;
   }
 }
 

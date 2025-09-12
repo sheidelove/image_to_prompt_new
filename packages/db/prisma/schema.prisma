@@ -102,3 +102,25 @@ enum Status {
   STOPPED
   DELETED
 }
+
+enum TaskStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model AsyncTask {
+  id          String     @id @default(dbgenerated("gen_random_uuid()"))
+  taskId      String     @unique
+  status      TaskStatus @default(PENDING)
+  result      String?    @db.Text
+  error       String?    @db.Text
+  metadata    String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  expiresAt   DateTime
+
+  @@index([taskId])
+  @@index([expiresAt])
+}

@@ -161,7 +161,9 @@ export function ImageToPromptTool({ lang }: ImageToPromptToolProps) {
       formData.append("image", imageFile);
       formData.append("style_preference", selectedModel);
 
-      // Try async version first
+      // Try async version first (with extended timeout)
+      setGeneratedPrompt(lang === 'zh' ? "正在生成提示词，请稍候..." : "Generating prompt, please wait...");
+      
       const response = await fetch("/api/image-to-prompt-async", {
         method: "POST",
         body: formData,
@@ -170,6 +172,8 @@ export function ImageToPromptTool({ lang }: ImageToPromptToolProps) {
       if (!response.ok) {
         // If async fails, fall back to original API
         console.log("Async API failed, falling back to sync...");
+        setGeneratedPrompt(lang === 'zh' ? "重试中..." : "Retrying...");
+        
         const syncResponse = await fetch("/api/image-to-prompt", {
           method: "POST",
           body: formData,
@@ -187,12 +191,11 @@ export function ImageToPromptTool({ lang }: ImageToPromptToolProps) {
 
       const data = await response.json();
       
-      if (data.taskId) {
-        // Async processing started, poll for results
-        setGeneratedPrompt(lang === 'zh' ? "正在生成提示词，请稍候..." : "Generating prompt, please wait...");
-        await pollTaskStatus(data.taskId);
+      if (data.prompt) {
+        // Direct result from async API
+        setGeneratedPrompt(data.prompt);
       } else {
-        throw new Error("No task ID returned");
+        throw new Error("No prompt in response");
       }
 
     } catch (error) {
