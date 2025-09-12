@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// This should match the storage used in the async API
-// In production, use Redis or database
-const taskStorage = new Map<string, {
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  result?: any;
-  error?: string;
-  startTime: number;
-}>();
+import { TaskStorage } from "~/lib/task-storage";
 
 export async function GET(
   request: NextRequest,
@@ -22,11 +14,18 @@ export async function GET(
     );
   }
 
-  const task = taskStorage.get(taskId);
+  console.log(`Checking status for task: ${taskId}`);
+  console.log(`Available tasks: ${TaskStorage.getAllTaskIds().join(', ')}`);
+
+  const task = TaskStorage.get(taskId);
   
   if (!task) {
     return NextResponse.json(
-      { error: "Task not found or expired" },
+      { 
+        error: "Task not found or expired",
+        taskId,
+        availableTasks: TaskStorage.getAllTaskIds()
+      },
       { status: 404 }
     );
   }
@@ -34,7 +33,7 @@ export async function GET(
   // Clean up old completed/failed tasks (older than 1 hour)
   const oneHourAgo = Date.now() - (60 * 60 * 1000);
   if (task.startTime < oneHourAgo && (task.status === 'completed' || task.status === 'failed')) {
-    taskStorage.delete(taskId);
+    TaskStorage.delete(taskId);
     return NextResponse.json(
       { error: "Task expired" },
       { status: 410 }

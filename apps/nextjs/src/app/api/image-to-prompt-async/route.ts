@@ -1,13 +1,6 @@
 import { env } from "~/env";
 import { NextRequest, NextResponse } from "next/server";
-
-// In-memory storage for task status (in production, use Redis or database)
-const taskStorage = new Map<string, {
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  result?: any;
-  error?: string;
-  startTime: number;
-}>();
+import { TaskStorage, type TaskData } from "~/lib/task-storage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +44,7 @@ export async function POST(request: NextRequest) {
     console.log("Created task:", taskId);
 
     // Initialize task status
-    taskStorage.set(taskId, {
+    TaskStorage.set(taskId, {
       status: 'pending',
       startTime: Date.now()
     });
@@ -59,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Start async processing (don't await)
     processImageAsync(taskId, file, stylePreference).catch(error => {
       console.error("Async processing failed:", error);
-      taskStorage.set(taskId, {
+      TaskStorage.set(taskId, {
         status: 'failed',
         error: error instanceof Error ? error.message : String(error),
         startTime: Date.now()
@@ -91,7 +84,7 @@ async function processImageAsync(taskId: string, file: File, stylePreference: st
     console.log(`Processing task ${taskId} - Starting file upload...`);
     
     // Update status to processing
-    taskStorage.set(taskId, {
+    TaskStorage.set(taskId, {
       status: 'processing',
       startTime: Date.now()
     });
@@ -202,7 +195,7 @@ async function processImageAsync(taskId: string, file: File, stylePreference: st
     console.log(`Task ${taskId} - Completed successfully`);
 
     // Update task with result
-    taskStorage.set(taskId, {
+    TaskStorage.set(taskId, {
       status: 'completed',
       result: {
         prompt: generatedPrompt,
@@ -213,7 +206,7 @@ async function processImageAsync(taskId: string, file: File, stylePreference: st
 
   } catch (error) {
     console.error(`Task ${taskId} failed:`, error);
-    taskStorage.set(taskId, {
+    TaskStorage.set(taskId, {
       status: 'failed',
       error: error instanceof Error ? error.message : String(error),
       startTime: Date.now()
@@ -221,42 +214,3 @@ async function processImageAsync(taskId: string, file: File, stylePreference: st
   }
 }
 
-// GET endpoint to check task status
-export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const taskId = url.searchParams.get('taskId');
-
-  if (!taskId) {
-    return NextResponse.json(
-      { error: "Task ID is required" },
-      { status: 400 }
-    );
-  }
-
-  const task = taskStorage.get(taskId);
-  
-  if (!task) {
-    return NextResponse.json(
-      { error: "Task not found" },
-      { status: 404 }
-    );
-  }
-
-  // Clean up old completed/failed tasks (older than 1 hour)
-  const oneHourAgo = Date.now() - (60 * 60 * 1000);
-  if (task.startTime < oneHourAgo && (task.status === 'completed' || task.status === 'failed')) {
-    taskStorage.delete(taskId);
-    return NextResponse.json(
-      { error: "Task expired" },
-      { status: 410 }
-    );
-  }
-
-  return NextResponse.json({
-    taskId,
-    status: task.status,
-    result: task.result,
-    error: task.error,
-    elapsedTime: Date.now() - task.startTime
-  });
-}
