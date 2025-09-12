@@ -12,26 +12,7 @@ export const getMarketingConfig = async ({
   const dict = await getDictionary(lang);
   return {
     mainNav: [
-      {
-        title: "Libra AI",
-        href: "https://libra.dev/",
-      },
-      {
-        title: dict.marketing.main_nav_features,
-        href: `/#features`,
-      },
-      {
-        title: dict.marketing.main_nav_pricing,
-        href: `/pricing`,
-      },
-      {
-        title: dict.marketing.main_nav_blog,
-        href: `/blog`,
-      },
-      {
-        title: dict.marketing.main_nav_documentation,
-        href: `/docs`,
-      },
+      // 移除所有主导航项，只保留品牌 logo 和登录/注册功能
     ],
   };
 };

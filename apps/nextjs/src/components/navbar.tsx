@@ -55,62 +55,39 @@ export function NavBar({
           {children}
         </MainNav>
 
-        <div className="flex items-center space-x-3">
-          {items?.length ? (
-            <nav className="hidden gap-6 md:flex">
-              {items?.map((item, index) => (
-                <Link
-                  key={index}
-                  href={item.disabled ? "#" : (item.href.startsWith("http") ? item.href : `/${lang}${item.href}`)}
-                  className={cn(
-                    "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
-                    item.href.startsWith(`/${segment}`)
-                      ? "text-blue-500 font-semibold"
-                      : "",
-                    item.disabled && "cursor-not-allowed opacity-80",
-                  )}
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
-          ) : null}
-
-          <div className="w-[1px] h-8 bg-accent"></div>
-
+        <div className="flex items-center space-x-4">
           {rightElements}
 
-          <div className="hidden md:flex lg:flex xl:flex">
-            <GitHubStar />
-          </div>
+          {/* 语言切换 */}
           <LocaleChange url={"/"} />
+          
+          {/* 用户认证按钮 */}
           {!user ? (
-            <Link href={`/${lang}/login-clerk`}>
-              <Button variant="outline" size="sm">
-                {typeof marketing.login === "string"
-                  ? marketing.login
-                  : "Default Login Text"}
+            <div className="flex items-center space-x-2">
+              <Link href={`/${lang}/login-clerk`}>
+                <Button variant="outline" size="sm">
+                  {typeof marketing.login === "string"
+                    ? marketing.login
+                    : "登录"}
+                </Button>
+              </Link>
+              <Button
+                className="px-4"
+                variant="default"
+                size="sm"
+                onClick={signInModal.onOpen}
+              >
+                {typeof marketing.signup === "string"
+                  ? marketing.signup
+                  : "注册"}
               </Button>
-            </Link>
-          ) : null}
-
-          {user ? (
+            </div>
+          ) : (
             <UserAccountNav
               user={user}
               params={{ lang: `${lang}` }}
               dict={dropdown}
             />
-          ) : (
-            <Button
-              className="px-3"
-              variant="default"
-              size="sm"
-              onClick={signInModal.onOpen}
-            >
-              {typeof marketing.signup === "string"
-                ? marketing.signup
-                : "Default Signup Text"}
-            </Button>
           )}
         </div>
       </div>

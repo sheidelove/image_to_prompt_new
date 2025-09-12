@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 
 import * as Icons from "@saasfly/ui/icons";
-import { DocumentGuide } from "~/components/document-guide";
 import { MobileNav } from "~/components/mobile-nav";
 
 import type { MainNavItem } from "~/types";
@@ -29,30 +28,31 @@ export function MainNav({ items, children, params: { lang }, marketing }: MainNa
   return (
     <div className="flex gap-6 md:gap-10">
       <div className="flex items-center">
-        <Link href={`/${lang}`} className="hidden items-center space-x-2 md:flex">
-          <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <Link href={`/${lang}`} className="flex items-center space-x-2">
+          <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             ImagePrompt.org
           </div>
         </Link>
 
-        <Link href="#" className="ml-4 hidden md:flex lg:flex xl:flex">
-          <DocumentGuide>
-            {typeof marketing?.introducing === "string" ? marketing?.introducing : "介绍 ImagePrompt"}
-          </DocumentGuide>
-        </Link>
+        {/* 移除 Saasfly 介绍链接 */}
       </div>
 
-      <button
-        className="flex items-center space-x-2 md:hidden"
-        onClick={() => setShowMobileMenu(!showMobileMenu)}
-      >
-        {showMobileMenu ? <Icons.Close/> : <Icons.Logo/>}
-        <span className="font-bold">Menu</span>
-      </button>
-      {showMobileMenu && items && (
-        <MobileNav items={items} menuItemClick={handleMenuItemClick}>
-          {children}
-        </MobileNav>
+      {/* 移动端菜单按钮 - 由于没有导航项，暂时隐藏 */}
+      {items && items.length > 0 && (
+        <>
+          <button
+            className="flex items-center space-x-2 md:hidden"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+          >
+            {showMobileMenu ? <Icons.Close/> : <Icons.Logo/>}
+            <span className="font-bold">Menu</span>
+          </button>
+          {showMobileMenu && (
+            <MobileNav items={items} menuItemClick={handleMenuItemClick}>
+              {children}
+            </MobileNav>
+          )}
+        </>
       )}
     </div>
   );
